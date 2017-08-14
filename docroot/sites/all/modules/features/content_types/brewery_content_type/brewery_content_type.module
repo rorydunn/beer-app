@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Brewery Content Type feature.
+ */
+
+include_once 'brewery_content_type.features.inc';

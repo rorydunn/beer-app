@@ -1,0 +1,8 @@
+name = "Breweries"
+description = "Custom code relating to beer fest entities"
+version = "7.x-1.0"
+core = "7.x"
+package = "Beer Fest Custom"
+dependencies[] = brewery_field_bases
+dependencies[] = brewery_content_type
+dependencies[] = beer_content_type

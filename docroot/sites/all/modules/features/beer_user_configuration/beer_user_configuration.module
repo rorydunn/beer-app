@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Beer User Configuration feature.
+ */
+
+include_once 'beer_user_configuration.features.inc';

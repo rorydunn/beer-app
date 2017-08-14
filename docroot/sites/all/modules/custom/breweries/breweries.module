@@ -1,0 +1,54 @@
+<?php
+
+// implements hook user update
+function breweries_user_update(&$edit, $account, $category) {
+  // dsm($account);
+  if(isset($account->field_brewery[LANGUAGE_NONE][0]['target_id'])){
+    //Determine brewery id
+    $nid = $account->field_brewery[LANGUAGE_NONE][0]['target_id'];
+    $brewery = node_load($nid, $vid = NULL, $reset = FALSE);
+    $brewery_id = $brewery->field_brewery_id[LANGUAGE_NONE][0]['value'];
+
+    //Look up brewery and get all beer information about it
+    $url = 'http://api.brewerydb.com/v2/brewery/' . $brewery_id . '/beers?key=534d493eefc3e62b4f094027276c1ac9';
+    $data = file_get_contents($url);
+    $data = json_decode($data);
+    $beers = $data->data;
+    foreach ($beers as $beer) {
+      global $user;
+
+      // entity_create replaces the procedural steps in the first example of
+      // creating a new object $node and setting its 'type' and uid property
+      $values = array(
+        'type' => 'beer',
+        // 'uid' => $user->uid,
+        'status' => 1,
+        'comment' => 1,
+        'promote' => 0,
+      );
+      $entity = entity_create('node', $values);
+      $ewrapper = entity_metadata_wrapper('node', $entity);
+
+      //Sets it to be an organic group
+      // $ewrapper->group_group->set(1);
+      //Sets title, brewery id, website etc.
+      $ewrapper->title->set($beer->name);
+      $ewrapper->field_beer_id->set($beer->id);
+      $entity->og_group_ref[LANGUAGE_NONE][0]['target_id'] = $nid;
+
+      if(isset($beer->website)){
+        $entity->field_url[LANGUAGE_NONE][0]['value'] = $beer->website;
+      }
+      if(isset($beer->abv)){
+        $entity->field_abv[LANGUAGE_NONE][0]['value'] = $beer->abv;
+      }
+
+      //Save updated entity
+      $ewrapper->save();
+    }
+  }
+}
+
+// function breweries_form_alter(){
+//   dsm($variables);
+// }

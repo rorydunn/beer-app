@@ -1,0 +1,51 @@
+<?php
+
+function breweries_install(){
+  //Determine number of pages of breweries
+  $response = file_get_contents('http://api.brewerydb.com/v2/breweries?p=8&key=534d493eefc3e62b4f094027276c1ac9');
+  $response = json_decode($response);
+  $pages = $response->numberOfPages;
+  $page = 1;
+  //Loop through each page and create a drupal node, content type brewery, for each brewery found.
+  while ($page <= $pages) {
+    $url = 'http://api.brewerydb.com/v2/breweries?p=' . $page . '&key=534d493eefc3e62b4f094027276c1ac9';
+    $data = file_get_contents($url);
+    $data = json_decode($data);
+    $breweries = $data->data;
+    $i = 0;
+    foreach ($breweries as $brewery) {
+      global $user;
+
+      // entity_create replaces the procedural steps in the first example of
+      // creating a new object $node and setting its 'type' and uid property
+      $values = array(
+        'type' => 'brewery',
+        // 'uid' => $user->uid,
+        'status' => 1,
+        'comment' => 1,
+        'promote' => 0,
+      );
+      $entity = entity_create('node', $values);
+      $ewrapper = entity_metadata_wrapper('node', $entity);
+
+      //Sets it to be an organic group
+      $ewrapper->group_group->set(1);
+      //Sets title, brewery id, website etc.
+      $ewrapper->title->set($brewery->name);
+      if(isset($brewery->description)){
+        $entity->body[LANGUAGE_NONE][0]['value'] = $brewery->description;
+      }
+      $ewrapper->field_brewery_id->set($brewery->id);
+      if(isset($brewery->website)){
+        $entity->field_url[LANGUAGE_NONE][0]['value'] = $brewery->website;
+      }
+      if(isset($brewery->established)){
+        $entity->field_established[LANGUAGE_NONE][0]['value'] = $brewery->established;
+      }
+
+      //Save updated entity
+      $ewrapper->save();
+    }
+    $page++;
+  }
+}

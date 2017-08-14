@@ -1,0 +1,10 @@
+name = Beer Fest Modules
+core = 7.x
+package = Beer Fest Features
+version = 7.x-1.0
+dependencies[] = entityreference
+dependencies[] = features
+dependencies[] = rules
+dependencies[] = views
+features[features_api][] = api:2
+project path = sites/all/modules/features

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Beer Views feature.
+ */
+
+include_once 'beer_views.features.inc';

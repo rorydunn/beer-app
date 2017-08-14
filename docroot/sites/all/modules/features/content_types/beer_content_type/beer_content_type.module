@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Beer Content Type feature.
+ */
+
+include_once 'beer_content_type.features.inc';
